@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(40, 23%, 97%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(16, 100%, 60%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(75, 58%, 18%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(42, 100%, 65%);
+  --accent-foreground: hsl(20, 14.3%, 4.1%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+  
+  /* Custom colors for the cooking app */
+  --primary-light: hsl(16, 100%, 67%);
+  --primary-dark: hsl(16, 79%, 47%);
+  --secondary-light: hsl(150, 39%, 45%);
+  --cream: hsl(40, 23%, 97%);
+  --warm-gray: hsl(0, 0%, 96%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(16, 100%, 60%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(75, 58%, 18%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(42, 100%, 65%);
+  --accent-foreground: hsl(20, 14.3%, 4.1%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-cream text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .primary-orange {
+    color: hsl(16, 100%, 60%);
+  }
+  
+  .bg-primary-orange {
+    background-color: hsl(16, 100%, 60%);
+  }
+  
+  .bg-primary-light {
+    background-color: hsl(16, 100%, 67%);
+  }
+  
+  .bg-primary-dark {
+    background-color: hsl(16, 79%, 47%);
+  }
+  
+  .bg-secondary-green {
+    background-color: hsl(75, 58%, 18%);
+  }
+  
+  .bg-secondary-light {
+    background-color: hsl(150, 39%, 45%);
+  }
+  
+  .bg-accent-yellow {
+    background-color: hsl(42, 100%, 65%);
+  }
+  
+  .bg-cream {
+    background-color: hsl(40, 23%, 97%);
+  }
+  
+  .bg-warm-gray {
+    background-color: hsl(0, 0%, 96%);
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(0, 0%, 96%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(16, 100%, 60%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(16, 79%, 47%);
+}
