@@ -11,8 +11,8 @@ export const recipes = pgTable("recipes", {
   difficulty: text("difficulty").notNull(), // Easy, Medium, Hard
   cuisine: text("cuisine").notNull(),
   rating: integer("rating").notNull().default(0), // 1-5 scale * 10 (e.g., 47 = 4.7)
-  ingredients: jsonb("ingredients").notNull().$type<string[]>(),
-  instructions: jsonb("instructions").notNull().$type<string[]>(),
+  ingredients: text("ingredients").array().notNull(),
+  instructions: text("instructions").array().notNull(),
   imageUrl: text("image_url").notNull(),
 });
 

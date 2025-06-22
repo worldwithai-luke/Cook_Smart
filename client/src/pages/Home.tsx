@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import IngredientInput from "@/components/IngredientInput";
 import RecipeCard from "@/components/RecipeCard";
@@ -10,7 +10,8 @@ import { Recipe, UserIngredient } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Utensils, Clock, Users, Star } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Utensils, Clock, Users, Star, Sparkles } from "lucide-react";
 
 export default function Home() {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
@@ -67,13 +68,31 @@ export default function Home() {
     };
   });
 
+  const generateAIRecipesMutation = useMutation({
+    mutationFn: async (params: any) => {
+      return apiRequest("POST", "/api/recipes/generate", params);
+    },
+    onSuccess: (newRecipes) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/recipes"] });
+      setCurrentSection("recipes");
+      document.getElementById("recipes")?.scrollIntoView({ behavior: "smooth" });
+    },
+    onError: (error: any) => {
+      console.error("Failed to generate AI recipes:", error);
+      throw error;
+    },
+  });
+
   const handleFindRecipes = async () => {
     if (userIngredients.length > 0) {
       await searchRecipes();
     }
     setCurrentSection("recipes");
-    // Scroll to recipes section
     document.getElementById("recipes")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleGenerateAIRecipes = async (params: any) => {
+    await generateAIRecipesMutation.mutateAsync(params);
   };
 
   return (
@@ -134,7 +153,10 @@ export default function Home() {
               Add your available ingredients to discover amazing recipe possibilities
             </p>
           </div>
-          <IngredientInput onFindRecipes={handleFindRecipes} />
+          <IngredientInput 
+            onFindRecipes={handleFindRecipes} 
+            onGenerateRecipes={handleGenerateAIRecipes}
+          />
         </div>
       </section>
 
@@ -143,9 +165,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8">
             <div>
-              <h3 className="text-3xl font-bold text-secondary mb-2">Recipe Suggestions</h3>
+              <h3 className="text-3xl font-bold text-secondary mb-2 flex items-center">
+                Recipe Suggestions
+                {generateAIRecipesMutation.isPending && (
+                  <Sparkles className="ml-3 h-6 w-6 text-purple-600 animate-spin" />
+                )}
+              </h3>
               <p className="text-gray-600">
                 Found {filteredRecipes.length} recipes{userIngredients.length > 0 ? " with your ingredients" : ""}
+                {generateAIRecipesMutation.isPending && " • Generating fresh AI recipes..."}
               </p>
             </div>
             

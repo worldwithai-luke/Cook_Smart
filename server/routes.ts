@@ -6,6 +6,7 @@ import {
   insertFavoriteRecipeSchema, 
   insertShoppingListItemSchema 
 } from "@shared/schema";
+import { generateHealthyRecipe, generateMultipleRecipes, type GenerateRecipeRequest } from "./gemini";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -158,6 +159,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Failed to update shopping item" });
+    }
+  });
+
+  // AI Recipe Generation
+  app.post("/api/recipes/generate", async (req, res) => {
+    try {
+      const schema = z.object({
+        ingredients: z.array(z.string()).min(1),
+        cuisine: z.string().optional(),
+        difficulty: z.enum(["Easy", "Medium", "Hard"]).optional(),
+        maxCookingTime: z.number().optional(),
+        servings: z.number().optional(),
+        dietaryRestrictions: z.array(z.string()).optional(),
+        count: z.number().min(1).max(5).default(3)
+      });
+
+      const validatedData = schema.parse(req.body);
+      const { count, ...generateParams } = validatedData;
+
+      const generatedRecipes = await generateMultipleRecipes(generateParams, count);
+      
+      // Save generated recipes to database
+      const savedRecipes = [];
+      for (const recipe of generatedRecipes) {
+        const saved = await storage.createRecipe(recipe);
+        savedRecipes.push(saved);
+      }
+
+      res.json(savedRecipes);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
+      console.error("Recipe generation error:", error);
+      res.status(500).json({ error: "Failed to generate recipes" });
     }
   });
 
