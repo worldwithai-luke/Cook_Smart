@@ -101,6 +101,18 @@ export default function Home() {
     },
   });
 
+  const clearGeneratedRecipesMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("DELETE", "/api/recipes/generated");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/recipes"] });
+    },
+    onError: (error: any) => {
+      console.error("Failed to clear generated recipes:", error);
+    },
+  });
+
   const handleFindRecipes = async () => {
     setIsReset(false);
     if (userIngredients.length > 0) {
@@ -121,10 +133,16 @@ export default function Home() {
     queryClient.setQueryData(["/api/recipes/search"], []);
     setIsReset(true);
     
-    // Clear all user ingredients
+    // Clear all user ingredients and generated recipes in parallel
+    const promises = [];
+    
     if (userIngredients.length > 0) {
-      await clearAllIngredientsMutation.mutateAsync();
+      promises.push(clearAllIngredientsMutation.mutateAsync());
     }
+    
+    promises.push(clearGeneratedRecipesMutation.mutateAsync());
+    
+    await Promise.all(promises);
     
     setCurrentSection("ingredients");
     document.getElementById("ingredients")?.scrollIntoView({ behavior: "smooth" });
@@ -240,10 +258,10 @@ export default function Home() {
                 onClick={handleResetRecipes}
                 variant="outline"
                 className="flex items-center gap-2"
-                disabled={clearAllIngredientsMutation.isPending}
+                disabled={clearAllIngredientsMutation.isPending || clearGeneratedRecipesMutation.isPending}
               >
                 <RotateCcw className="h-4 w-4" />
-                {clearAllIngredientsMutation.isPending ? "Resetting..." : "Reset"}
+                {(clearAllIngredientsMutation.isPending || clearGeneratedRecipesMutation.isPending) ? "Resetting..." : "Reset"}
               </Button>
             </div>
           </div>

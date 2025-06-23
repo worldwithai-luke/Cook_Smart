@@ -48,6 +48,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/recipes/generated", async (req, res) => {
+    try {
+      await storage.clearGeneratedRecipes();
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to clear generated recipes" });
+    }
+  });
+
   // User Ingredients
   app.get("/api/ingredients", async (req, res) => {
     try {

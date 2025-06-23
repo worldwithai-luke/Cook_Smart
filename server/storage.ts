@@ -13,7 +13,7 @@ import {
   type InsertShoppingListItem
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, gt } from "drizzle-orm";
 
 export interface IStorage {
   // Recipes
@@ -21,6 +21,7 @@ export interface IStorage {
   getRecipe(id: number): Promise<Recipe | undefined>;
   createRecipe(recipe: InsertRecipe): Promise<Recipe>;
   searchRecipesByIngredients(ingredients: string[]): Promise<Recipe[]>;
+  clearGeneratedRecipes(): Promise<void>;
   
   // User Ingredients
   getUserIngredients(): Promise<UserIngredient[]>;
@@ -239,6 +240,11 @@ export class DatabaseStorage implements IStorage {
       .update(shoppingListItems)
       .set({ purchased })
       .where(eq(shoppingListItems.id, id));
+  }
+
+  async clearGeneratedRecipes(): Promise<void> {
+    // Delete all recipes except the initial sample recipes (keeping only id <= 3)
+    await db.delete(recipes).where(gt(recipes.id, 3));
   }
 }
 
