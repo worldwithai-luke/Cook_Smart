@@ -18,6 +18,7 @@ export default function Home() {
   const [cuisineFilter, setCuisineFilter] = useState<string>("all");
   const [timeFilter, setTimeFilter] = useState<string>("all");
   const [currentSection, setCurrentSection] = useState<string>("ingredients");
+  const [isReset, setIsReset] = useState<boolean>(true);
 
   const { data: recipes = [], isLoading: recipesLoading } = useQuery<Recipe[]>({
     queryKey: ["/api/recipes"],
@@ -32,8 +33,8 @@ export default function Home() {
     enabled: false,
   });
 
-  // Use searched recipes if available, otherwise all recipes
-  const displayRecipes = searchedRecipes.length > 0 ? searchedRecipes : recipes;
+  // Use searched recipes if available, show empty if reset, otherwise all recipes
+  const displayRecipes = isReset ? [] : (searchedRecipes.length > 0 ? searchedRecipes : recipes);
 
   // Filter recipes based on selected filters
   const filteredRecipes = displayRecipes.filter((recipe) => {
@@ -101,6 +102,7 @@ export default function Home() {
   });
 
   const handleFindRecipes = async () => {
+    setIsReset(false);
     if (userIngredients.length > 0) {
       await searchRecipes();
     }
@@ -109,6 +111,7 @@ export default function Home() {
   };
 
   const handleGenerateAIRecipes = async (params: any) => {
+    setIsReset(false);
     await generateAIRecipesMutation.mutateAsync(params);
   };
 
@@ -116,6 +119,7 @@ export default function Home() {
     setCuisineFilter("all");
     setTimeFilter("all");
     queryClient.setQueryData(["/api/recipes/search"], []);
+    setIsReset(true);
     
     // Clear all user ingredients
     if (userIngredients.length > 0) {
