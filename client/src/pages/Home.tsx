@@ -83,6 +83,23 @@ export default function Home() {
     },
   });
 
+  const clearAllIngredientsMutation = useMutation({
+    mutationFn: async () => {
+      // Get all user ingredients and delete them one by one
+      const ingredients = userIngredients;
+      const deletePromises = ingredients.map(ingredient => 
+        apiRequest("DELETE", `/api/ingredients/${ingredient.id}`)
+      );
+      return Promise.all(deletePromises);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/ingredients"] });
+    },
+    onError: (error: any) => {
+      console.error("Failed to clear ingredients:", error);
+    },
+  });
+
   const handleFindRecipes = async () => {
     if (userIngredients.length > 0) {
       await searchRecipes();
@@ -95,10 +112,16 @@ export default function Home() {
     await generateAIRecipesMutation.mutateAsync(params);
   };
 
-  const handleResetRecipes = () => {
+  const handleResetRecipes = async () => {
     setCuisineFilter("all");
     setTimeFilter("all");
     queryClient.setQueryData(["/api/recipes/search"], []);
+    
+    // Clear all user ingredients
+    if (userIngredients.length > 0) {
+      await clearAllIngredientsMutation.mutateAsync();
+    }
+    
     setCurrentSection("ingredients");
     document.getElementById("ingredients")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -213,9 +236,10 @@ export default function Home() {
                 onClick={handleResetRecipes}
                 variant="outline"
                 className="flex items-center gap-2"
+                disabled={clearAllIngredientsMutation.isPending}
               >
                 <RotateCcw className="h-4 w-4" />
-                Reset
+                {clearAllIngredientsMutation.isPending ? "Resetting..." : "Reset"}
               </Button>
             </div>
           </div>
