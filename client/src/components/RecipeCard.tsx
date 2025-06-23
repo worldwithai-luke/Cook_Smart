@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Recipe } from "@shared/schema";
-import { Clock, Users, Star, Heart, ShoppingCart } from "lucide-react";
+import { Clock, Users, Heart, ShoppingCart } from "lucide-react";
 
 interface RecipeCardProps {
   recipe: Recipe & {
@@ -77,8 +77,6 @@ export default function RecipeCard({ recipe, onViewRecipe }: RecipeCardProps) {
     }
   };
 
-  const rating = recipe.rating / 10; // Convert from 0-50 scale to 0-5 scale
-
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
       <img
@@ -108,10 +106,6 @@ export default function RecipeCard({ recipe, onViewRecipe }: RecipeCardProps) {
           <span className="flex items-center">
             <Users className="mr-1 h-4 w-4" />
             {recipe.servings} servings
-          </span>
-          <span className="flex items-center">
-            <Star className="mr-1 h-4 w-4 text-accent fill-current" />
-            {rating.toFixed(1)}
           </span>
         </div>
 

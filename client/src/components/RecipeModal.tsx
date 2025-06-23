@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Recipe, UserIngredient } from "@shared/schema";
-import { Clock, Users, Star, Heart, ShoppingCart, Printer } from "lucide-react";
+import { Clock, Users, Heart, ShoppingCart, Printer } from "lucide-react";
 
 interface RecipeModalProps {
   recipe: Recipe;
@@ -85,8 +85,6 @@ export default function RecipeModal({ recipe, isOpen, onClose }: RecipeModalProp
     )
   );
 
-  const rating = recipe.rating / 10;
-
   const handlePrint = () => {
     const printContent = `
       <html>
@@ -108,7 +106,7 @@ export default function RecipeModal({ recipe, isOpen, onClose }: RecipeModalProp
           <div class="header">
             <div class="title">${recipe.name}</div>
             <div class="meta">
-              ⏱ ${recipe.cookingTime} minutes | 👥 ${recipe.servings} servings | ⭐ ${rating.toFixed(1)}
+              ⏱ ${recipe.cookingTime} minutes | 👥 ${recipe.servings} servings
             </div>
             <div class="meta">${recipe.description}</div>
           </div>
@@ -178,10 +176,6 @@ export default function RecipeModal({ recipe, isOpen, onClose }: RecipeModalProp
                   <span className="flex items-center">
                     <Users className="mr-2 h-4 w-4" />
                     {recipe.servings} servings
-                  </span>
-                  <span className="flex items-center">
-                    <Star className="mr-1 h-4 w-4 text-accent fill-current" />
-                    {rating.toFixed(1)}
                   </span>
                 </div>
 

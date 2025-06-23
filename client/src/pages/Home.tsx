@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Utensils, Clock, Users, Star, Sparkles } from "lucide-react";
+import { Utensils, Clock, Users, Star, Sparkles, RotateCcw } from "lucide-react";
 
 export default function Home() {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
@@ -95,6 +95,14 @@ export default function Home() {
     await generateAIRecipesMutation.mutateAsync(params);
   };
 
+  const handleResetRecipes = () => {
+    setCuisineFilter("all");
+    setTimeFilter("all");
+    queryClient.setQueryData(["/api/recipes/search"], []);
+    setCurrentSection("ingredients");
+    document.getElementById("ingredients")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div className="min-h-screen bg-cream">
       <Header currentSection={currentSection} onSectionChange={setCurrentSection} />
@@ -102,11 +110,11 @@ export default function Home() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary-light to-primary py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-white">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <div className="text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-black">
               Turn Your Ingredients Into Delicious Meals
             </h2>
-            <p className="text-xl mb-8 opacity-90">
+            <p className="text-xl mb-8 text-black">
               Enter what's in your kitchen and get personalized recipes that reduce food waste
             </p>
             <Button 
@@ -127,7 +135,7 @@ export default function Home() {
       {/* Quick Stats */}
       <section className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
             <div className="p-6">
               <div className="text-3xl font-bold text-primary mb-2">{recipes.length}</div>
               <div className="text-gray-600">Recipes Available</div>
@@ -135,10 +143,6 @@ export default function Home() {
             <div className="p-6">
               <div className="text-3xl font-bold text-secondary mb-2">89%</div>
               <div className="text-gray-600">Food Waste Reduced</div>
-            </div>
-            <div className="p-6">
-              <div className="text-3xl font-bold text-accent mb-2">4.8★</div>
-              <div className="text-gray-600">User Rating</div>
             </div>
           </div>
         </div>
@@ -204,6 +208,15 @@ export default function Home() {
                   <SelectItem value="over-60">Over 1 hour</SelectItem>
                 </SelectContent>
               </Select>
+
+              <Button
+                onClick={handleResetRecipes}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Reset
+              </Button>
             </div>
           </div>
 
